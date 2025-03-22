@@ -1,0 +1,13 @@
+{
+    "server": {
+        "port": 8081
+    },
+    "services": {
+        "news": {
+            "url": "http://localhost:8080"
+        },
+        "comments": {
+            "url": "http://localhost:8082"
+        }
+    }
+} 
