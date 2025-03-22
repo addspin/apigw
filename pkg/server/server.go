@@ -90,10 +90,7 @@ func NewServer(cfg *config.Config) *Server {
 }
 
 func (s *Server) setupRoutes() {
-	// Маршруты с применением обоих middleware
-	// Порядок важен: requestIDMiddleware должен выполняться первым
-	// В Go, внутренний middleware (ближайший к обработчику) выполняется первым,
-	// затем выполняется middleware, который его обернул
+	// Маршруты с применением  middleware
 	s.mux.Handle("/api/news", s.requestIDMiddleware(s.loggingMiddleware(http.HandlerFunc(s.handleNews))))
 	s.mux.Handle("/api/fullnews", s.requestIDMiddleware(s.loggingMiddleware(http.HandlerFunc(s.handleFullNews))))
 
@@ -250,14 +247,6 @@ func (s *Server) handleNews(w http.ResponseWriter, r *http.Request) {
 
 	// Если указан параметр comm - получаем новость и комментарии к ней
 	if commentNewsID != "" {
-		// Если параметр m присутствует, сообщаем об ошибке - устаревший метод
-		if query.Get("m") != "" {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]string{
-				"error": "Добавление комментариев через GET-запрос устарело. Используйте POST-запрос на /api/comments/add"})
-			return
-		}
 
 		// Получаем новость и комментарии к ней
 		log.Printf("Получение новости ID: %s с комментариями", commentNewsID)
